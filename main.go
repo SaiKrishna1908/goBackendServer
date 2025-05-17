@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"goBackendServer/internal/app"
+	"goBackendServer/internal/routes"
 	"net/http"
 	"time"
 )
@@ -25,18 +26,21 @@ func main() {
 		panic(err)
 	}
 
-	// Add healthcheck endpoint
-	http.HandleFunc("/health", app.HealthCheck)
+	// set up routes
+	r := routes.SetUpRoutes(*app)
 
+	// server properties
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
+		Handler:      r,
 	}
 
 	app.Logger.Printf("Started go server at %d", port)
 
+	// Start the server
 	err = server.ListenAndServe()
 
 	if err != nil {
