@@ -26,6 +26,7 @@ func main() {
 		panic(err)
 	}
 
+	// defer the closing of database connection
 	defer app.DB.Close()
 
 	// set up routes

@@ -1,7 +1,9 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
+	"goBackendServer/internal/store"
 	"net/http"
 	"strconv"
 
@@ -9,10 +11,13 @@ import (
 )
 
 type WorkoutHandler struct {
+	workOutStore store.WorkoutStore
 }
 
-func NewWorkoutHandler() *WorkoutHandler {
-	return &WorkoutHandler{}
+func NewWorkoutHandler(workOutStore store.WorkoutStore) *WorkoutHandler {
+	return &WorkoutHandler{
+		workOutStore: workOutStore,
+	}
 }
 
 func (wh *WorkoutHandler) HandleWorkoutHandler(w http.ResponseWriter, r *http.Request) {
@@ -32,5 +37,20 @@ func (wh *WorkoutHandler) HandleWorkoutHandler(w http.ResponseWriter, r *http.Re
 }
 
 func (wh *WorkoutHandler) HandleCreateWorkout(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Created a workout\n")
+	var workOut store.Workout
+	err := json.NewDecoder(r.Body).Decode(&workOut)
+
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "failed to create workout", http.StatusInternalServerError)
+		return
+	}
+
+	savedWorkout, err := wh.workOutStore.CreateWorkout(&workOut)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "failed to create workout", http.StatusInternalServerError)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(savedWorkout)
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"goBackendServer/internal/api"
 	"goBackendServer/internal/store"
+	"goBackendServer/migrations"
 	"log"
 	"net/http"
 	"os"
@@ -27,10 +28,15 @@ func NewApplication() (*Application, error) {
 		panic(fmt.Errorf("%s", err))
 	}
 
-	// TODO: data stores
+	err = store.MigrateFS(pgDB, migrations.FS, ".")
+	if err != nil {
+		panic(err)
+	}
+
+	workOutStore := store.NewPostgresWorkoutStore(pgDB)
 
 	// handlers
-	workOutHandler := api.NewWorkoutHandler()
+	workOutHandler := api.NewWorkoutHandler(workOutStore)
 
 	app := &Application{
 		Logger:         logger,
