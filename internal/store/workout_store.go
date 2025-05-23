@@ -1,6 +1,9 @@
 package store
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+)
 
 type Workout struct {
 	ID              int            `json:"id"`
@@ -32,7 +35,8 @@ func NewPostgresWorkoutStore(db *sql.DB) *PostgresWorkoutStore {
 
 type WorkoutStore interface {
 	CreateWorkout(*Workout) (*Workout, error)
-	GetWorkoutById(id int64) (*Workout, error)
+	GetWorkoutById(int64) (*Workout, error)
+	UpdateWorkout(*Workout) (*Workout, error)
 }
 
 // TODO: Generate id by auto increment
@@ -83,18 +87,51 @@ func (pg *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error
 }
 
 func (pg *PostgresWorkoutStore) GetWorkoutById(id int64) (*Workout, error) {
-	// tx, err := pg.db.Begin()
+	tx, err := pg.db.Begin()
 
-	// if err != nil {
-	// 	return nil, err
-	// }
+	if err != nil {
+		return nil, err
+	}
 
-	// query := `
-	// 	SELECT id, title, description, duration_minutes, calories_burned
-	// 	VALUES ($1, $2, $3, $4, $5)
-	// `
-	// // get the entry
+	query := `
+		SELECT id, title, description, duration_minutes, calories_burned
+		FROM workouts
+		WHERE id = $1
+	`
+	// get the entry
 
-	// err = tx.QueryRow(query)
-	return nil, nil
+	var workOut Workout
+
+	err = tx.QueryRow(query, id).Scan(&workOut.ID, &workOut.Title, &workOut.Description, &workOut.DurationMinutes, &workOut.CaloriesBurned)
+
+	if err != nil {
+		fmt.Println("Error fetching workouts", err)
+		return nil, nil
+	}
+
+	return &workOut, nil
+}
+
+func (pg *PostgresWorkoutStore) UpdateWorkout(workOut *Workout) (*Workout, error) {
+	tx, err := pg.db.Begin()
+
+	if err != nil {
+		fmt.Println("Error with db Begin ", err)
+	}
+
+	query := `
+		UPDATE workouts
+		SET id = $1, title = $2, description = $3, duration_minutes = $4, calories_burned = $5
+		where id = $1
+	`
+
+	var updatedWorkout Workout
+
+	err = tx.QueryRow(query, workOut.ID, workOut.Title, workOut.Description, workOut.DurationMinutes, workOut.CaloriesBurned).Scan(&updatedWorkout.ID, &updatedWorkout.Title, &updatedWorkout.Description, &updatedWorkout.DurationMinutes, &updatedWorkout.CaloriesBurned)
+
+	if err != nil {
+		fmt.Println("Error updating workout ", err)
+	}
+
+	return workOut, nil
 }
