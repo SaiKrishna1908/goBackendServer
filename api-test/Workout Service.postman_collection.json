@@ -1,0 +1,119 @@
+{
+	"info": {
+		"_postman_id": "66da3597-d0b8-4047-b308-3c73716c9f92",
+		"name": "Workout Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14384874"
+	},
+	"item": [
+		{
+			"name": "Create Workout",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Push\",\n    \"description\": \"Chest, Shoulders, Tricpes\",\n    \"duration_minutes\": 35,\n    \"calories_burned\": 250,\n    \"entries\": [\n        {\n            \"exercise_name\": \"Push Ups\",\n            \"sets\": 3,\n            \"reps\": 15,\n            \"duration_seconds\": null,\n            \"weight\": null,\n            \"notes\": \"Standard push ups\",\n            \"order_index\": 1\n        },\n        {\n            \"exercise_name\": \"Plank\",\n            \"sets\": null,\n            \"reps\": -1,\n            \"duration_seconds\": null,\n            \"weight\": null,\n            \"notes\": \"Hold for 1 minute each set\",\n            \"order_index\": 2\n        },\n        {\n            \"exercise_name\": \"Dumbbell Curl\",\n            \"sets\": 4,\n            \"reps\": 12,\n            \"duration_seconds\": null,\n            \"weight\": 10.5,\n            \"notes\": \"Use moderate weight\",\n            \"order_index\": 3\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/workouts",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"workouts"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Workout",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/workouts/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"workouts",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Workout By Id",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Pull\",\n  \"description\": \"Back, Biceps\",\n  \"duration_minutes\": 35,\n  \"calories_burned\": 250,\n  \"entries\": [\n    {\n      \"exercise_name\": \"Pull Ups\",\n      \"sets\": 3,\n      \"reps\": 8,\n      \"duration_seconds\": null,\n      \"weight\": null,\n      \"notes\": \"Assisted if needed\",\n      \"order_index\": 1\n    },\n    {\n      \"exercise_name\": \"Barbell Row\",\n      \"sets\": 4,\n      \"reps\": 10,\n      \"duration_seconds\": null,\n      \"weight\": 40,\n      \"notes\": \"Keep back straight\",\n      \"order_index\": 2\n    },\n    {\n      \"exercise_name\": \"Dumbbell Curl\",\n      \"sets\": 4,\n      \"reps\": 12,\n      \"duration_seconds\": null,\n      \"weight\": 10.5,\n      \"notes\": \"Use moderate weight\",\n      \"order_index\": 3\n    }\n  ]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/workouts/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"workouts",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Workout By Id",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/workouts/7",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"workouts",
+						"7"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
