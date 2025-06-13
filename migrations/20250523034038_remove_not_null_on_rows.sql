@@ -6,6 +6,4 @@ alter table workout_entries alter column sets drop not null;
 
 -- +goose Down
 -- +goose StatementBegin
-alter table workout_entries
-alter sets reps INTEGER not null;
 -- +goose StatementEnd
