@@ -8,6 +8,7 @@ import (
 
 type Workout struct {
 	ID              int            `json:"id"`
+	UserId          int            `json:"user_id"`
 	Title           string         `json:"title"`
 	Description     string         `json:"description"`
 	DurationMinutes int            `json:"duration_minutes"`
@@ -39,6 +40,7 @@ type WorkoutStore interface {
 	GetWorkoutById(int64) (*Workout, error)
 	UpdateWorkout(*Workout) error
 	DeleteWorkoutById(int64) error
+	GetWorkoutOwner(id int64) (int, error)
 }
 
 // TODO: Generate id by auto increment
@@ -52,12 +54,12 @@ func (pg *PostgresWorkoutStore) CreateWorkout(workout *Workout) (*Workout, error
 
 	query :=
 		`
-	INSERT INTO workouts (title, description, duration_minutes, calories_burned)
-	VALUES($1, $2, $3, $4)
+	INSERT INTO workouts (user_id, title, description, duration_minutes, calories_burned)
+	VALUES($1, $2, $3, $4, $5)
 	RETURNING id
 	`
 
-	err = tx.QueryRow(query, workout.Title, workout.Description, workout.DurationMinutes, workout.CaloriesBurned).Scan(&workout.ID)
+	err = tx.QueryRow(query, workout.UserId, workout.Title, workout.Description, workout.DurationMinutes, workout.CaloriesBurned).Scan(&workout.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -260,4 +262,22 @@ func (pg *PostgresWorkoutStore) DeleteWorkoutById(id int64) error {
 	}
 
 	return nil
+}
+
+func (pg *PostgresWorkoutStore) GetWorkoutOwner(workoutID int64) (int, error) {
+	var userID int
+
+	query := `
+		SELECT user_id 
+		FROM workouts
+		WHERE id = $1
+	`
+
+	err := pg.db.QueryRow(query, workoutID).Scan(&userID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return userID, err
 }
