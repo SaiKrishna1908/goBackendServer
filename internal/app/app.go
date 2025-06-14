@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"goBackendServer/internal/api"
+	"goBackendServer/internal/middleware"
 	"goBackendServer/internal/store"
 	"goBackendServer/internal/utils"
 	"goBackendServer/migrations"
@@ -17,6 +18,8 @@ type Application struct {
 	Logger         *log.Logger
 	WorkoutHandler *api.WorkoutHandler
 	UserHandler    *api.UserHandler
+	TokenHanlder   *api.TokenHanlder
+	Middleware     middleware.UserMiddleware
 	DB             *sql.DB
 }
 
@@ -37,15 +40,20 @@ func NewApplication() (*Application, error) {
 
 	workOutStore := store.NewPostgresWorkoutStore(pgDB)
 	userStore := store.NewPostgresUserStore(pgDB)
+	tokenStore := store.NewPostgresTokenStore(pgDB)
 
 	// handlers
 	workOutHandler := api.NewWorkoutHandler(workOutStore, logger)
 	userHandler := api.NewUserHandler(userStore, logger)
+	tokenHandler := api.NewTokenHandler(tokenStore, userStore, logger)
+	middlewareHandler := middleware.UserMiddleware{UserStore: userStore}
 
 	app := &Application{
 		Logger:         logger,
 		WorkoutHandler: workOutHandler,
 		UserHandler:    userHandler,
+		TokenHanlder:   tokenHandler,
+		Middleware:     middlewareHandler,
 		DB:             pgDB,
 	}
 
